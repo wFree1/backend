@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <header th:replace="common/top"></header>
+    <div class="container">
+        <h1>商品列表</h1>
+
+        <div class="product-list">
+            <!-- 循环显示商品 -->
+            <div class="product-card" th:each="product : ${products}">
+                <a th:href="@{/product/{id}(id=${product.id})}">
+                    <img th:src="${product.picture}" alt="商品图片">
+                    <h3 th:text="${product.name}"></h3>
+                    <p class="price" th:text="'¥' + ${#numbers.formatDecimal(product.price, 1, 2)}"></p>
+                </a>
+            </div>
+        </div>
+    </div>
+    <footer th:replace="common/bottom"></footer>
+</body>
+</html>

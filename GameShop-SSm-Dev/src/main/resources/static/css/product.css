@@ -1,0 +1,75 @@
+/* style.css */
+.container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+}
+
+.product-image img {
+    width: 100%;
+    border-radius: 8px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+}
+
+.status-badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    display: inline-block;
+    color: white;
+    font-size: 14px;
+}
+
+.status-badge.active {
+    background: #28a745; /* 绿色代表促销中 */
+}
+
+.status-badge.inactive {
+    background: #dc3545; /* 红色代表已下架 */
+}
+
+.type-price {
+    margin: 15px 0;
+    font-size: 18px;
+}
+
+.price {
+    color: #e74a3b;
+    font-weight: bold;
+    margin-left: 20px;
+}
+
+.tags {
+    margin: 15px 0;
+}
+
+.tag {
+    background: #f8f9fa;
+    padding: 5px 12px;
+    border-radius: 15px;
+    margin-right: 10px;
+    display: inline-block;
+}
+
+.actions {
+    margin-top: 25px;
+}
+
+.btn-buy, .btn-cart {
+    padding: 12px 30px;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+}
+
+.btn-buy {
+    background: #4e73df;
+    color: white;
+}
+
+.btn-cart {
+    background: #f8f9fa;
+    margin-left: 15px;
+}

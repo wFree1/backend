@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>商品详情</title>
+    <link th:href="@{/css/product.css}" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+    <!-- 商品图片 -->
+    <div class="product-image">
+        <img th:src="@{${product.picture}}" alt="商品主图">
+    </div>
+
+    <!-- 商品信息 -->
+    <div class="product-info">
+        <!-- 状态标签 -->
+        <div class="status-badge"
+             th:classappend="${product.status == '促销中'} ? 'active' : 'inactive'"
+             th:text="${product.status}"></div>
+
+        <h1 th:text="${product.name}"></h1>
+
+        <!-- 分类信息 -->
+        <div class="category-section">
+            <span class="label">大类：</span>
+            <span th:text="${product.category}"></span>
+        </div>
+
+        <!-- 类型与价格 -->
+        <div class="type-price">
+            <span class="label">版本：</span>
+            <span th:text="${product.type}"></span>
+            <span class="price" th:text="'¥' + ${#numbers.formatDecimal(product.price, 1, 2)}"></span>
+        </div>
+
+
+
+        <!-- 操作按钮 -->
+        <div class="actions">
+            <button class="btn-buy">立即购买</button>
+            <button class="btn-cart">加入购物车</button>
+        </div>
+
+        <!-- 商品描述 -->
+        <div class="description" th:text="${product.description}"></div>
+    </div>
+</div>
+</body>
+</html>

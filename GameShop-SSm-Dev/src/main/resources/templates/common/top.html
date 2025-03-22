@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" th:href="@{/css/style.css}" type="text/css" media="screen">
+    <title>GameShop</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
+<body>
+<div class="header">
+    <ul class="header">
+        <!-- 使用 Thymeleaf URL 语法处理上下文路径 -->
+        <li><a th:href="@{/mainForm}"><img th:src="@{/images/logo.png}" id="logo" alt="logo"></a></li>
+
+        <!-- 导航链接统一使用 Thymeleaf URL 表达式 -->
+        <li class="header"><a th:href="@{/mainForm}">商店</a></li>
+        <li class="header"><a th:href="@{/cart}">购物车</a></li>
+        <li class="header"><a th:href="@{/order_list}">订单</a></li>
+        <li class="header"><a th:href="@{/userinfo}">个人信息</a></li>
+        <li class="header"><a th:href="@{/actionForm}">日志</a></li>
+    </ul>
+</div>
