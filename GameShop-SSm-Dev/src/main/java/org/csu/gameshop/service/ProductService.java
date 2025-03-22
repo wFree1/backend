@@ -7,8 +7,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 public interface ProductService {
-   public ProductVO getProductDetail(int productId);
-   public List<ProductVO> getProductList();
-   public void addProduct(Product product, MultipartFile pictureFile);
-   List<ProductVO> getAllProducts();
+   public Product getProductDetail(int productId);
+   public List<Product> getProductList();
+  /* public void addProduct(Product product, MultipartFile pictureFile);*/
+   List<Product> getAllProducts();
 }

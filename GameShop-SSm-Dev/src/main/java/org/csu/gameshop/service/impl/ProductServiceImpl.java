@@ -27,28 +27,32 @@ public class ProductServiceImpl implements ProductService {
     private ProductMapper productMapper;
 
     @Override
-    public ProductVO getProductDetail(int productId) {
-       ProductVO productVO = new ProductVO();
-       Product product = productMapper.selectById(productId);
-        BeanUtils.copyProperties(product, productVO); // 自动复制同名属性
-        return productVO;
+    public Product getProductDetail(int productId) {
+        Product product = productMapper.selectById(productId);
+        return product;
     }
 
     @Override
-    public List<ProductVO> getProductList() {
+    public List<Product> getProductList() {
         return List.of();
     }
 
     @Override
-    public List<ProductVO> getAllProducts() {
+    public List<Product> getAllProducts() {
         List<Product> products = productMapper.selectList(null);
-        return convertToVOList(products);
+
+        // 打印 List<Product> 的字符串形式
+        System.out.println("Products: " + products); // 自动调用每个元素的 toString()
+
+        return products;
     }
+
     private List<ProductVO> convertToVOList(List<Product> products) {
         return products.stream()
                 .map(this::convertToVO)
                 .collect(Collectors.toList());
     }
+
     // 实体转VO方法
     private ProductVO convertToVO(Product product) {
         if (product == null) return null;
@@ -57,13 +61,14 @@ public class ProductServiceImpl implements ProductService {
         BeanUtils.copyProperties(product, vo);
         return vo;
     }
-
+}
     /**
      * 添加单个商品
-     * @param product 商品实体（不含图片路径）
+     *
+     * @param product     商品实体（不含图片路径）
      * @param pictureFile 图片文件（允许为空）
      */
-    @Transactional
+   /* @Transactional
     public void addProduct(Product product, MultipartFile pictureFile) {
         // 1. 基础校验
         validateProduct(product);
@@ -108,3 +113,6 @@ public class ProductServiceImpl implements ProductService {
         }
     }
 }
+
+
+*/

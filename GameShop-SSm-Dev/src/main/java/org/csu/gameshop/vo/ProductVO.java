@@ -18,5 +18,12 @@ public class ProductVO {
     private String picture;       // 主图URL
     private String description;
     private Double price;
-
+    @Override
+    public String toString() {
+        return "ProductVO{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", price=" + price +
+                '}';
+    }
 }

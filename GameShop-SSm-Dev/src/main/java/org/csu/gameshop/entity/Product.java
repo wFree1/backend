@@ -15,4 +15,14 @@ public class Product {
     private String picture;
     private String description;
     private double price;
+    @Override
+    public String toString() {
+        return "Product {" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", category='" + category + '\'' +
+                ", type='" + type + '\'' +
+                ", price=" + String.format("¥%.2f", price) + // 格式化为货币
+                '}';
+    }
 }
