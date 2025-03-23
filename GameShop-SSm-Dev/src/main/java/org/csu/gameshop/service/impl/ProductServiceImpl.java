@@ -8,6 +8,7 @@ import org.csu.gameshop.service.ProductService;
 import org.csu.gameshop.vo.ProductVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,6 +26,8 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     private ProductMapper productMapper;
+    @Value("${image.upload-dir}")
+    private String uploadDir; // 从配置文件中注入路径
 
     @Override
     public Product getProductDetail(int productId) {
@@ -97,15 +100,18 @@ public class ProductServiceImpl implements ProductService {
 
     private String uploadImage(MultipartFile file) {
         try {
-            // 生成唯一文件名
-            String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-            // 定义存储路径（示例路径：/var/www/uploads/）
-            Path uploadDir = Paths.get("/images");
-            if (!Files.exists(uploadDir)) {
-                Files.createDirectories(uploadDir);
+            //生成安全文件名
+            String originalName = file.getOriginalFilename();
+            String safeName = originalName.replaceAll("[^a-zA-Z0-9.-]", "_");
+            String fileName = UUID.randomUUID() + "_" + safeName;
+
+            // 2. 创建存储目录
+            Path dir = Paths.get(uploadDir);
+            if (!Files.exists(dir)) {
+                Files.createDirectories(dir);
             }
             // 保存文件
-            Path filePath = uploadDir.resolve(fileName);
+            Path filePath = dir.resolve(fileName);
             file.transferTo(filePath);
             return fileName; // 返回文件名用于数据库存储
         } catch (IOException e) {
@@ -148,6 +154,7 @@ public class ProductServiceImpl implements ProductService {
             }
         }
     }
+
 }
 
 

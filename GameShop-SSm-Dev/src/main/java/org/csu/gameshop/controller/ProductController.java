@@ -32,8 +32,9 @@ public class ProductController {
         return product;
     }
 
+
       //添加商品
-        @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+        @PostMapping(value = "/add",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
         public ResponseEntity<?> addProduct(
                 @RequestPart("product") Product product,      // 接收商品表单数据
                 @RequestPart(value = "image", required = false) MultipartFile imageFile
