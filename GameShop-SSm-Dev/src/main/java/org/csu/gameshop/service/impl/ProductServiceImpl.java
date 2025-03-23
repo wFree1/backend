@@ -147,7 +147,7 @@ public class ProductServiceImpl implements ProductService {
     private void deleteOldImage(String oldPicturePath) {
         if (oldPicturePath != null) {
             try {
-                Path filePath = Paths.get("/images").resolve(oldPicturePath);
+                Path filePath = Paths.get(uploadDir).resolve(oldPicturePath);
                 Files.deleteIfExists(filePath);
             } catch (IOException e) {
                 throw new RuntimeException("旧图片删除失败: " + e.getMessage());
