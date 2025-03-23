@@ -36,7 +36,7 @@ public class ProductController {
         Product product=productService.getProductDetail(id);
         return product;
     }
-    // 新增图片获取接口
+   /* // 新增图片获取接口
     @GetMapping("/image/{filename:.+}")
     public ResponseEntity<Resource> getImage(@PathVariable String filename) {
         try {
@@ -57,7 +57,7 @@ public class ProductController {
             return ResponseEntity.internalServerError()
                     .body(null);
         }
-    }
+    }*/
 
       //添加商品
         @PostMapping(value = "/add",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
