@@ -30,10 +30,11 @@ public class ProductController {
         return ResponseEntity.ok(products);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping(value = "/{id}",produces = MediaType.APPLICATION_JSON_VALUE)
     public Product productDetail(@PathVariable Integer id)
     {
         Product product=productService.getProductDetail(id);
+        System.out.println(product);
         return product;
     }
    /* // 新增图片获取接口
