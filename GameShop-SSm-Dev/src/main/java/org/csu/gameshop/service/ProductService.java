@@ -9,6 +9,7 @@ import java.util.List;
 public interface ProductService {
    public Product getProductDetail(int productId);
    public List<Product> getProductList();
-  /* public void addProduct(Product product, MultipartFile pictureFile);*/
+  public void addProduct(Product product, MultipartFile pictureFile);
    List<Product> getAllProducts();
+    public void updateProduct(Product updatedProduct, MultipartFile pictureFile);
 }

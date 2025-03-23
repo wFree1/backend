@@ -47,6 +47,7 @@ public class ProductServiceImpl implements ProductService {
         return products;
     }
 
+
     private List<ProductVO> convertToVOList(List<Product> products) {
         return products.stream()
                 .map(this::convertToVO)
@@ -61,14 +62,13 @@ public class ProductServiceImpl implements ProductService {
         BeanUtils.copyProperties(product, vo);
         return vo;
     }
-}
     /**
      * 添加单个商品
      *
      * @param product     商品实体（不含图片路径）
      * @param pictureFile 图片文件（允许为空）
      */
-   /* @Transactional
+    @Transactional
     public void addProduct(Product product, MultipartFile pictureFile) {
         // 1. 基础校验
         validateProduct(product);
@@ -112,7 +112,43 @@ public class ProductServiceImpl implements ProductService {
             throw new RuntimeException("图片上传失败: " + e.getMessage());
         }
     }
+    @Transactional
+    public void updateProduct(Product updatedProduct, MultipartFile pictureFile) {
+        // 1. 检查商品是否存在
+        Product existingProduct = productMapper.selectById(updatedProduct.getId());
+
+        // 2. 基础校验（复用添加时的校验方法）
+        validateProduct(updatedProduct);
+
+        // 3. 处理图片更新
+        if (pictureFile != null && !pictureFile.isEmpty()) {
+            // 删除旧图片（可选）
+             deleteOldImage(existingProduct.getPicture());
+
+            // 上传新图片
+            String newPicturePath = uploadImage(pictureFile);
+            updatedProduct.setPicture(newPicturePath);
+        } else {
+            // 保留原有图片路径
+            updatedProduct.setPicture(existingProduct.getPicture());
+        }
+
+        // 4. 更新数据库
+        productMapper.updateById(updatedProduct);
+    }
+
+    // 可选添加的旧图片删除方法
+    private void deleteOldImage(String oldPicturePath) {
+        if (oldPicturePath != null) {
+            try {
+                Path filePath = Paths.get("/images").resolve(oldPicturePath);
+                Files.deleteIfExists(filePath);
+            } catch (IOException e) {
+                throw new RuntimeException("旧图片删除失败: " + e.getMessage());
+            }
+        }
+    }
 }
 
 
-*/
+
