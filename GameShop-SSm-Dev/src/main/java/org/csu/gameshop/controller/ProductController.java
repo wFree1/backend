@@ -76,6 +76,28 @@ public class ProductController {
             }
         }
 
+    // 单个删除
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteProduct(@PathVariable Integer id) {
+        try {
+            productService.deleteProduct(id);
+            return ResponseEntity.ok("商品删除成功");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (RuntimeException e) {
+            return ResponseEntity.internalServerError().body("服务器错误: " + e.getMessage());
+        }
+    }
+    // 批量删除（使用POST+RequestBody更通用）
+    @PostMapping("/batch-delete")
+    public ResponseEntity<?> batchDeleteProducts(@RequestBody List<Integer> ids) {
+        try {
+            productService.batchDeleteProducts(ids);
+            return ResponseEntity.ok("批量删除成功");
+        } catch (RuntimeException e) {
+            return ResponseEntity.internalServerError().body("服务器错误: " + e.getMessage());
+        }
+    }
         //修改商品信息
         @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
         public ResponseEntity<?> updateProduct(

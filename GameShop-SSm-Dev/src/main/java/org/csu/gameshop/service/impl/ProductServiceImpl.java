@@ -155,6 +155,37 @@ public class ProductServiceImpl implements ProductService {
         }
     }
 
+    // 单个删除
+    @Transactional
+    public void deleteProduct(Integer id) {
+        // 1. 获取商品信息（包含图片路径）
+        Product product = productMapper.selectById(id);
+        if (product == null) {
+            throw new IllegalArgumentException("商品不存在");
+        }
+
+        // 2. 删除图片
+        deleteOldImage(product.getPicture());
+
+        // 3. 删除数据库记录
+        productMapper.deleteById(id);
+    }
+    // 批量删除
+    @Transactional
+    public void batchDeleteProducts(List<Integer> ids) {
+        // 1. 批量查询商品信息
+        List<Product> products = productMapper.selectBatchIds(ids);
+        if (products.isEmpty()) return;
+
+        // 2. 删除所有关联图片
+        products.stream()
+                .map(Product::getPicture)
+                .forEach(this::deleteOldImage);
+
+        // 3. 批量删除数据库记录
+        productMapper.deleteBatchIds(ids);
+    }
+
 }
 
 
