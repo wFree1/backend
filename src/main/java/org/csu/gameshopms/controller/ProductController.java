@@ -27,7 +27,7 @@ public class ProductController {
     public Product productDetail(@PathVariable Integer id)
     {
         Product product=productService.getProductDetail(id);
-        System.out.println(product);
+        //System.out.println(product);
         return product;
     }
    /* // 新增图片获取接口

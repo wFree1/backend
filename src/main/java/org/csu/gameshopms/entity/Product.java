@@ -24,7 +24,10 @@ public class Product {
                 ", name='" + name + '\'' +
                 ", category='" + category + '\'' +
                 ", type='" + type + '\'' +
+                ", picture='" + picture + '\'' +
+                ", description='" + description + '\'' +
                 ", price=" + String.format("¥%.2f", price) + // 格式化为货币
+                ", storage=" + storage +
                 '}';
     }
 
