@@ -297,7 +297,7 @@ public class UserController {
     @GetMapping("/users/total")
     public Map<String, Object> total() {
         HashMap<String,Object> response = new HashMap<>();
-        response.put("user_toatl",userService.total());
+        response.put("user_total",userService.total());
         return response;
     }
 
