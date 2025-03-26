@@ -30,8 +30,7 @@ public class ProductService {
     private String uploadDir; // 从配置文件中注入路径
 
     public Product getProductDetail(int productId) {
-        Product product = productMapper.selectById(productId);
-        return product;
+        return productMapper.selectById(productId);
     }
 
     public List<Product> getProductList() {

@@ -55,5 +55,15 @@ public class Product {
         return category;
     }
 
+    public String getType() {
+        return type;
+    }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public int getStorage() {
+        return storage;
+    }
 }

@@ -26,9 +26,7 @@ public class ProductController {
     @GetMapping(value = "/{id}",produces = MediaType.APPLICATION_JSON_VALUE)
     public Product productDetail(@PathVariable Integer id)
     {
-        Product product=productService.getProductDetail(id);
-        //System.out.println(product);
-        return product;
+        return productService.getProductDetail(id);
     }
    /* // 新增图片获取接口
     @GetMapping("/image/{filename:.+}")

@@ -15,7 +15,7 @@ class GameShopMsSsmApplicationTests {
 
     @Test
     void contextLoads() {
-        System.out.println(productController.productDetail(23).toString());
+        System.out.println(productController.productDetail(1));
     }
 
 }
