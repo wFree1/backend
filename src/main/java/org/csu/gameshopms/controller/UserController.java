@@ -297,7 +297,13 @@ public class UserController {
     @GetMapping("/users/total")
     public Map<String, Object> total() {
         HashMap<String,Object> response = new HashMap<>();
-        response.put("user_total",userService.total());
+        try {
+            response.put("user_total", userService.total());
+            response.put("success", true);
+        }catch(Exception e){
+            response.put("success",false);
+            response.put("msg",e.getMessage());
+        }
         return response;
     }
 

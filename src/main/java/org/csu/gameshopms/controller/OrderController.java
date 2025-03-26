@@ -60,7 +60,13 @@ public class OrderController {
     @GetMapping("/total")
     public Map<String, Object> total() {
         HashMap<String,Object> response = new HashMap<>();
-        response.put("order_total",orderService.getAllOrders().size());
+        try {
+            response.put("order_total", orderService.getAllOrders().size());
+            response.put("success", true);
+        }catch(Exception e){
+            response.put("success",false);
+            response.put("msg",e.getMessage());
+        }
         return response;
     }
 }
