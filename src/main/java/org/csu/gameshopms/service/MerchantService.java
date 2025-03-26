@@ -5,11 +5,13 @@ import org.csu.gameshopms.entity.Merchant;
 import org.csu.gameshopms.mapper.MerchantMapper;
 import org.csu.gameshopms.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@Component
 @Service
 public class MerchantService {
     @Autowired

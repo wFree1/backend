@@ -6,10 +6,12 @@ import org.csu.gameshopms.entity.Order;
 import org.csu.gameshopms.entity.OrderDetailDTO;
 import org.csu.gameshopms.mapper.OrderMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Component
 @Service
 public class OrderService {
 

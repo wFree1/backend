@@ -1,8 +1,12 @@
 package org.csu.gameshopms.mapper;
 
 
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
+@Component
 public interface OrderItemMapper {
     @Select("""
         SELECT i.name 

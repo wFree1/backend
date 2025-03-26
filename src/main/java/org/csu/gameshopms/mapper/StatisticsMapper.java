@@ -1,18 +1,20 @@
 package org.csu.gameshopms.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.csu.gameshopms.entity.CategorySalesDTO;
 import org.csu.gameshopms.entity.Order;
 import org.csu.gameshopms.entity.SalesDataDTO;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-
-@org.apache.ibatis.annotations.Mapper
+@Component
 @Repository
+@Mapper
 public interface StatisticsMapper extends BaseMapper<Order> {
 
     /**

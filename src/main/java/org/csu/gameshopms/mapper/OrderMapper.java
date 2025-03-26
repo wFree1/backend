@@ -6,9 +6,11 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.csu.gameshopms.entity.ItemDTO;
 import org.csu.gameshopms.entity.Order;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Component
 @Mapper
 public interface OrderMapper extends BaseMapper<Order> {
 
