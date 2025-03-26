@@ -5,6 +5,7 @@ import org.csu.gameshopms.service.MerchantService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -118,6 +119,83 @@ public class MerchantController {
             response.put("success", false);
             e.printStackTrace();
         }
+        return response;
+    }
+
+    @PostMapping("/user/updatePwd")
+    public Map<String, Object> changePwd(@RequestBody Map<String, String> data) {
+        Map<String, Object> metaMap = new HashMap<>();
+        try {
+            if (data == null || !data.containsKey("userId") || !data.containsKey("newPassword")) {
+                metaMap.put("status", 400);
+                metaMap.put("msg", "缺少必要的参数：userId 或 newPassword");
+                Map<String, Object> response = new HashMap<>();
+                response.put("meta", metaMap);
+                response.put("data", null);
+                return Collections.unmodifiableMap(response);
+            }
+            String userIdStr = data.get("userId");
+            if (userIdStr == null || userIdStr.trim().isEmpty()) {
+                metaMap.put("status", 400);
+                metaMap.put("msg", "用户ID 不能为空");
+                Map<String, Object> response = new HashMap<>();
+                response.put("meta", metaMap);
+                response.put("data", null);
+                return Collections.unmodifiableMap(response);
+            }
+            int userId;
+            try {
+                userId = Integer.parseInt(userIdStr);
+            } catch (NumberFormatException e) {
+                metaMap.put("status", 400);
+                metaMap.put("msg", "用户ID 格式错误");
+                Map<String, Object> response = new HashMap<>();
+                response.put("meta", metaMap);
+                response.put("data", null);
+                return Collections.unmodifiableMap(response);
+            }
+            if (userId <= 0) {
+                metaMap.put("status", 400);
+                metaMap.put("msg", "用户ID 无效");
+                Map<String, Object> response = new HashMap<>();
+                response.put("meta", metaMap);
+                response.put("data", null);
+                return Collections.unmodifiableMap(response);
+            }
+            String newPassword = data.get("newPassword");
+            if (newPassword == null || newPassword.trim().isEmpty()) {
+                metaMap.put("status", 400);
+                metaMap.put("msg", "新密码不能为空");
+                Map<String, Object> response = new HashMap<>();
+                response.put("meta", metaMap);
+                response.put("data", null);
+                return Collections.unmodifiableMap(response);
+            }
+            System.out.println("开始修改密码: userId=" + userId + ", newPassword=" + newPassword);
+            merchantService.updatePassword(userId, newPassword);
+            metaMap.put("status", 200);
+            metaMap.put("msg", "密码修改成功");
+        } catch (IllegalArgumentException e) {
+            metaMap.put("status", 400);
+            metaMap.put("msg", e.getMessage());
+        } catch (RuntimeException e) {
+            metaMap.put("status", 404);
+            metaMap.put("msg", "用户不存在，请确认用户ID是否正确");
+        } catch (Exception e) {
+            e.printStackTrace();
+            metaMap.put("status", 500);
+            metaMap.put("msg", "服务器内部错误");
+        }
+        Map<String, Object> response = new HashMap<>();
+        response.put("meta", metaMap);
+        response.put("data", null);
+        return Collections.unmodifiableMap(response);
+    }
+
+    @GetMapping("/user/name")
+    public Map<String, Object> getUserName(@RequestParam(value = "id", required = false) String id) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("name", merchantService.getName(id));
         return response;
     }
 }

@@ -164,5 +164,9 @@ public class UserService {
     public int updateUserInfo(User user) {
         return userMapper.updateById(user);
     }
+
+    public int total(){
+        return userMapper.getTotalUserCount("");
+    }
 }
 

@@ -63,4 +63,14 @@ public class MerchantService {
         }
         return merchantMapper.updateById(merchant);
     }
+
+    public int updatePassword(int id, String password) {
+        Merchant merchant = merchantMapper.selectById(id);
+        merchant.setPassword(password);
+        return merchantMapper.updateById(merchant);
+    }
+
+    public String getName(String id){
+        return merchantMapper.selectById(id).getMerchantname();
+    }
 }

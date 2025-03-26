@@ -1,5 +1,6 @@
 package org.csu.gameshopms.controller;
 
+import com.alibaba.fastjson2.JSON;
 import org.csu.gameshopms.entity.Order;
 import org.csu.gameshopms.entity.OrderDetailDTO;
 import org.csu.gameshopms.service.OrderService;
@@ -54,5 +55,12 @@ public class OrderController {
         // 打印接收到的查询参数
         System.out.println("Received query: " + query);
         return orderService.searchOrders(query);
+    }
+
+    @GetMapping("/total")
+    public Map<String, Object> total() {
+        HashMap<String,Object> response = new HashMap<>();
+        response.put("order_total",orderService.getAllOrders().size());
+        return response;
     }
 }

@@ -286,12 +286,19 @@ public class UserController {
         } catch (Exception e) {
             e.printStackTrace();
             metaMap.put("status", 500);
-            metaMap.put("msg", "服务器内部错误，请联系管理员");
+            metaMap.put("msg", "服务器内部错误");
         }
         Map<String, Object> response = new HashMap<>();
         response.put("meta", metaMap);
         response.put("data", null);
         return Collections.unmodifiableMap(response);
+    }
+
+    @GetMapping("/users/total")
+    public Map<String, Object> total() {
+        HashMap<String,Object> response = new HashMap<>();
+        response.put("user_toatl",userService.total());
+        return response;
     }
 
 
