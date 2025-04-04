@@ -1,7 +1,6 @@
 package org.csu.gameshopms.controller;
 
 import org.csu.gameshopms.entity.Product;
-import org.csu.gameshopms.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -50,6 +49,16 @@ public class ProductController {
                     .body(null);
         }
     }*/
+// 新增评论接口
+   @PostMapping(value = "/{productId}/comments",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+   public ResponseEntity<?> addComment(
+           @PathVariable Integer productId,
+           @RequestBody String content,
+           @RequestHeader("X-User-Id") Integer userId) {
+
+       productService.addComment(productId, content, userId);
+       return ResponseEntity.ok("评论添加成功");
+   }
 
       //添加商品
         @PostMapping(value = "/add",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
