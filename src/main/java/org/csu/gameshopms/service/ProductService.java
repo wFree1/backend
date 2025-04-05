@@ -92,15 +92,33 @@ public class ProductService {
      * @param pictureFile 图片文件（允许为空）
      */
     @Transactional
-    public void addProduct(Product product, MultipartFile pictureFile) {
+    public void addProduct(Product product, MultipartFile[] pictureFile) {
         System.out.println("接收到的版本信息: " + product.getEditions()); // 添加日志
         // 1. 基础校验
         validateProduct(product);
 
         // 2. 处理图片上传
-        if (pictureFile != null && !pictureFile.isEmpty()) {
-            String picturePath = uploadImage(pictureFile);
-            product.setPicture(picturePath);
+        // 2. 处理图片上传（最多 5 张）
+        if (pictureFile!= null && pictureFile.length > 0) {
+            if (pictureFile.length > 5) {
+                throw new IllegalArgumentException("最多上传 5 张图片");
+            }
+
+            for (int i = 0; i < pictureFile.length; i++) {
+                if (i >= 5) break; // 最多处理前 5 张
+                MultipartFile file = pictureFile[i];
+                if (!file.isEmpty()) {
+                    String picturePath = uploadImage(file);
+                    // 根据索引设置到不同字段
+                    switch (i) {
+                        case 0: product.setPicture1(picturePath); break;
+                        case 1: product.setPicture2(picturePath); break;
+                        case 2: product.setPicture3(picturePath); break;
+                        case 3: product.setPicture4(picturePath); break;
+                        case 4: product.setPicture5(picturePath); break;
+                    }
+                }
+            }
         }
 
         // 3. 插入数据库
@@ -158,14 +176,14 @@ public class ProductService {
         // 3. 处理图片更新
         if (pictureFile != null && !pictureFile.isEmpty()) {
             // 删除旧图片（可选）
-             deleteOldImage(existingProduct.getPicture());
+             deleteOldImage(existingProduct.getPicture1());
 
             // 上传新图片
             String newPicturePath = uploadImage(pictureFile);
-            updatedProduct.setPicture(newPicturePath);
+            updatedProduct.setPicture1(newPicturePath);
         } else {
             // 保留原有图片路径
-            updatedProduct.setPicture(existingProduct.getPicture());
+            updatedProduct.setPicture1(existingProduct.getPicture1());
         }
 
         // 4. 更新数据库
@@ -206,7 +224,7 @@ public class ProductService {
         // 删除该商品的所有评论
         commentMapper.deleteByProductId(id);
         // 2. 删除图片
-        deleteOldImage(product.getPicture());
+        deleteOldImage(product.getPicture1());
 
         // 3. 删除数据库记录
         productMapper.deleteById(id);
@@ -226,7 +244,7 @@ public class ProductService {
             commentMapper.delete(wrapper);
             // 2. 删除所有关联图片
         products.stream()
-                .map(Product::getPicture)
+                .map(Product::getPicture1)
                 .forEach(this::deleteOldImage);
 
         // 3. 批量删除数据库记录

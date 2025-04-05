@@ -65,10 +65,10 @@ public class ProductController {
         @PostMapping(value = "/add",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
         public ResponseEntity<?> addProduct(
                 @RequestPart("product") Product product,      // 接收商品表单数据
-                @RequestPart(value = "image", required = false) MultipartFile imageFile
+                @RequestPart(value = "image", required = false) MultipartFile[] imageFiles
         ) {
             try {
-                productService.addProduct(product, imageFile);
+                productService.addProduct(product, imageFiles);
                 return ResponseEntity.ok("商品添加成功");
             } catch (IllegalArgumentException e) {
                 return ResponseEntity.badRequest().body(e.getMessage());
