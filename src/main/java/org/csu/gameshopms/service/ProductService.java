@@ -89,24 +89,23 @@ public class ProductService {
      * 添加单个商品
      *
      * @param product     商品实体（不含图片路径）
-     * @param pictureFile 图片文件（允许为空）
+     * @param imageFiles 图片文件（允许为空）
      */
     @Transactional
-    public void addProduct(Product product, MultipartFile[] pictureFile) {
+    public void addProduct(Product product, MultipartFile[] imageFiles) {
         System.out.println("接收到的版本信息: " + product.getEditions()); // 添加日志
         // 1. 基础校验
         validateProduct(product);
 
-        // 2. 处理图片上传
         // 2. 处理图片上传（最多 5 张）
-        if (pictureFile!= null && pictureFile.length > 0) {
-            if (pictureFile.length > 5) {
+        if (imageFiles != null && imageFiles.length > 0) {
+            if (imageFiles.length > 5) {
                 throw new IllegalArgumentException("最多上传 5 张图片");
             }
 
-            for (int i = 0; i < pictureFile.length; i++) {
+            for (int i = 0; i < imageFiles.length; i++) {
                 if (i >= 5) break; // 最多处理前 5 张
-                MultipartFile file = pictureFile[i];
+                MultipartFile file = imageFiles[i];
                 if (!file.isEmpty()) {
                     String picturePath = uploadImage(file);
                     // 根据索引设置到不同字段
@@ -166,7 +165,7 @@ public class ProductService {
         }
     }
     @Transactional
-    public void updateProduct(Product updatedProduct, MultipartFile pictureFile) {
+    public void updateProduct(Product updatedProduct, MultipartFile[] imageFiles) {
         // 1. 检查商品是否存在
         Product existingProduct = productMapper.selectById(updatedProduct.getId());
 
@@ -174,18 +173,50 @@ public class ProductService {
         validateProduct(updatedProduct);
 
         // 3. 处理图片更新
-        if (pictureFile != null && !pictureFile.isEmpty()) {
-            // 删除旧图片（可选）
-             deleteOldImage(existingProduct.getPicture1());
+        if (imageFiles != null && imageFiles.length > 0) {
+            if (imageFiles.length > 5) {
+                throw new IllegalArgumentException("最多上传 5 张图片");
+            }
 
-            // 上传新图片
-            String newPicturePath = uploadImage(pictureFile);
-            updatedProduct.setPicture1(newPicturePath);
+            // 3.1 删除旧图片（可选：根据需求决定是否删除）
+            deleteOldPictures(existingProduct);
+
+            // 3.2 上传新图片并设置路径
+            for (int i = 0; i < imageFiles.length; i++) {
+                if (i >= 5) break; // 最多处理前 5 张
+                MultipartFile file = imageFiles[i];
+                if (!file.isEmpty()) {
+                    String newPath = uploadImage(file);
+                    switch (i) {
+                        case 0: updatedProduct.setPicture1(newPath); break;
+                        case 1: updatedProduct.setPicture2(newPath); break;
+                        case 2: updatedProduct.setPicture3(newPath); break;
+                        case 3: updatedProduct.setPicture4(newPath); break;
+                        case 4: updatedProduct.setPicture5(newPath); break;
+                    }
+                }
+            }
+
+            // 3.3 保留未覆盖的旧图片（例如：用户只上传了前 2 张，保留后 3 张旧图）
+            if (imageFiles.length < 5) {
+                for (int i = imageFiles.length; i < 5; i++) {
+                    switch (i) {
+                        case 0: updatedProduct.setPicture1(existingProduct.getPicture1()); break;
+                        case 1: updatedProduct.setPicture2(existingProduct.getPicture2()); break;
+                        case 2: updatedProduct.setPicture3(existingProduct.getPicture3()); break;
+                        case 3: updatedProduct.setPicture4(existingProduct.getPicture4()); break;
+                        case 4: updatedProduct.setPicture5(existingProduct.getPicture5()); break;
+                    }
+                }
+            }
         } else {
-            // 保留原有图片路径
+            // 未上传新图片时，保留所有旧图片
             updatedProduct.setPicture1(existingProduct.getPicture1());
+            updatedProduct.setPicture2(existingProduct.getPicture2());
+            updatedProduct.setPicture3(existingProduct.getPicture3());
+            updatedProduct.setPicture4(existingProduct.getPicture4());
+            updatedProduct.setPicture5(existingProduct.getPicture5());
         }
-
         // 4. 更新数据库
         productMapper.updateById(updatedProduct);
         // 5. 处理版本更新（先删除旧版本，再插入新版本）
@@ -201,14 +232,23 @@ public class ProductService {
         }
     }
 
-    // 可选添加的旧图片删除方法
-    private void deleteOldImage(String oldPicturePath) {
-        if (oldPicturePath != null) {
+    // 删除旧图片（根据需求实现）
+    private void deleteOldPictures(Product existingProduct) {
+        deleteFile(existingProduct.getPicture1());
+        deleteFile(existingProduct.getPicture2());
+        deleteFile(existingProduct.getPicture3());
+        deleteFile(existingProduct.getPicture4());
+        deleteFile(existingProduct.getPicture5());
+    }
+
+
+    private void deleteFile(String filename) {
+        if (filename != null && !filename.isEmpty()) {
+            Path path = Paths.get(uploadDir, filename);
             try {
-                Path filePath = Paths.get(uploadDir).resolve(oldPicturePath);
-                Files.deleteIfExists(filePath);
+                Files.deleteIfExists(path);
             } catch (IOException e) {
-                throw new RuntimeException("旧图片删除失败: " + e.getMessage());
+                throw new RuntimeException("删除旧图片失败: " + filename);
             }
         }
     }
@@ -223,8 +263,8 @@ public class ProductService {
         }
         // 删除该商品的所有评论
         commentMapper.deleteByProductId(id);
-        // 2. 删除图片
-        deleteOldImage(product.getPicture1());
+        // 2. 删除所有图片（picture1~picture5）
+        deleteOldPictures(product);
 
         // 3. 删除数据库记录
         productMapper.deleteById(id);
@@ -242,10 +282,8 @@ public class ProductService {
             wrapper.in("product_id", ids);
 
             commentMapper.delete(wrapper);
-            // 2. 删除所有关联图片
-        products.stream()
-                .map(Product::getPicture1)
-                .forEach(this::deleteOldImage);
+        // 2. 删除所有关联图片
+        products.forEach(this::deleteOldPictures); // 遍历每个商品删除图片
 
         // 3. 批量删除数据库记录
         productMapper.deleteBatchIds(ids);

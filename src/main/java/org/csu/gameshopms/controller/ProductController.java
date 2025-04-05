@@ -104,11 +104,11 @@ public class ProductController {
         public ResponseEntity<?> updateProduct(
                 @PathVariable Integer id,
                 @RequestPart("product") Product updatedProduct,
-                @RequestPart(value = "image", required = false) MultipartFile imageFile
+                @RequestPart(value = "image", required = false) MultipartFile[] imageFiles
         ) {
             try {
                 updatedProduct.setId(id); // 确保ID一致性
-                productService.updateProduct(updatedProduct, imageFile);
+                productService.updateProduct(updatedProduct, imageFiles);
                 return ResponseEntity.ok("商品更新成功");
             } catch (IllegalArgumentException e) {
                 return ResponseEntity.badRequest().body(e.getMessage());
