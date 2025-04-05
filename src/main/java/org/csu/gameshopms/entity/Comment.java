@@ -22,6 +22,11 @@ public class Comment {
     @TableField("create_time")
     private LocalDateTime createTime;
 
+
+    // 新增字段：userName（非数据库字段）
+    @TableField(exist = false)  // 标注该字段不存在于数据库表中
+    private String userName;
+
     public void setId(Integer id) {
         this.id = id;
     }
@@ -40,6 +45,7 @@ public class Comment {
     public void setCreateTime(LocalDateTime createTime) {
         this.createTime = createTime;
     }
+    public void setUserName(String userName) { this.userName = userName; }
 
     public Integer getId() {
         return id;
@@ -59,4 +65,6 @@ public class Comment {
     public LocalDateTime getCreateTime() {
         return createTime;
     }
+    public String getUserName() { return userName; }
+
 }
