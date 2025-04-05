@@ -212,9 +212,9 @@ public class ProductService {
         // 构建评论对象
         Comment comment = new Comment();
         comment.setContent(content);
-        comment.setUser_id(userId);
-        comment.setProduct_id(productId);
-        comment.setCreate_time(LocalDateTime.now());
+        comment.setUserId(userId);
+        comment.setProductId(productId);
+        comment.setCreateTime(LocalDateTime.now());
         comment.setLike(0);
 
         // 保存评论
