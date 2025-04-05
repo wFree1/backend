@@ -170,6 +170,17 @@ public class ProductService {
 
         // 4. 更新数据库
         productMapper.updateById(updatedProduct);
+        // 5. 处理版本更新（先删除旧版本，再插入新版本）
+        if (updatedProduct.getEditions() != null) {
+            // 删除所有旧版本
+            editionMapper.delete(new QueryWrapper<Edition>().eq("product_id", updatedProduct.getId()));
+
+            // 插入新版本
+            if (!updatedProduct.getEditions().isEmpty()) {
+                updatedProduct.getEditions().forEach(edition -> edition.setProductId(updatedProduct.getId()));
+                editionMapper.insertBatch(updatedProduct.getEditions()); // 批量插入
+            }
+        }
     }
 
     // 可选添加的旧图片删除方法
