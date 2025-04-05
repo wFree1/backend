@@ -3,8 +3,10 @@ package org.csu.gameshopms.service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.micrometer.common.util.StringUtils;
 import org.csu.gameshopms.entity.Comment;
+import org.csu.gameshopms.entity.Edition;
 import org.csu.gameshopms.entity.Product;
 import org.csu.gameshopms.mapper.CommentMapper;
+import org.csu.gameshopms.mapper.EditionMapper;
 import org.csu.gameshopms.mapper.ProductMapper;
 import org.csu.gameshopms.vo.ProductVO;
 import org.springframework.beans.BeanUtils;
@@ -32,6 +34,9 @@ public class ProductService {
     private ProductMapper productMapper;
     @Autowired
     private CommentMapper commentMapper;
+    @Autowired
+    private EditionMapper editionMapper;
+
     @Value("${image.upload-dir}")
     private String uploadDir; // 从配置文件中注入路径
 
@@ -41,6 +46,13 @@ public class ProductService {
         if (product != null) {
             List<Comment> comments = commentMapper.selectByProductId(productId);
             product.setComments(comments);
+        }
+        // 获取版本信息
+        if (product != null){
+        List<Edition> editions = editionMapper.selectList(
+                new QueryWrapper<Edition>().eq("product_id", productId)
+        );
+        product.setEditions(editions);
         }
         return product;
     }
@@ -81,6 +93,7 @@ public class ProductService {
      */
     @Transactional
     public void addProduct(Product product, MultipartFile pictureFile) {
+        System.out.println("接收到的版本信息: " + product.getEditions()); // 添加日志
         // 1. 基础校验
         validateProduct(product);
 
@@ -92,6 +105,14 @@ public class ProductService {
 
         // 3. 插入数据库
         productMapper.insert(product);
+        int productId = product.getId(); // 获取自增的 productId
+        // 4. 保存版本信息
+        if (product.getEditions() != null && !product.getEditions().isEmpty()) {
+            for (Edition edition : product.getEditions()) {
+                edition.setProductId(productId); // 绑定 productId
+            }
+            editionMapper.insertBatch(product.getEditions()); // 批量插入（需 EditionMapper 支持）
+        }
     }
 
     private void validateProduct(Product product) {

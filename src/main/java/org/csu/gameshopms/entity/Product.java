@@ -22,6 +22,9 @@ public class Product {
     private int storage;
     @TableField(exist = false)  // 重要！标记为非数据库字段
     private List<Comment> comments;
+    @TableField(exist = false)
+    private List<Edition> editions; // 新增 editions 字段
+
     @Override
     public String toString() {
         return "Product {" +
@@ -50,6 +53,7 @@ public class Product {
         return picture;
     }
     public void setComments(List<Comment> comments) {this.comments = comments;}
+    public void setEditions(List<Edition> editions) {this.editions = editions;}
     public String getName() {
         return name;
     }
@@ -72,4 +76,8 @@ public class Product {
         return storage;
     }
     public List<Comment> getComments() { return comments;}
+    public List<Edition> getEditions() {
+        return editions;
+
+    }
 }
