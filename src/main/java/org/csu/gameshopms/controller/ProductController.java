@@ -31,7 +31,7 @@ public class ProductController {
    /* // 新增图片获取接口
     @GetMapping("/image/{filename:.+}")
     public ResponseEntity<Resource> getImage(@PathVariable String filename) {
-        try {aaaaaa
+        try {aaaaaaa
             // 1. 从存储路径加载文件
             Path filePath = Paths.get("src/main/resources/static/images/").resolve(filename).normalize();
             Resource resource = new UrlResource(filePath.toUri());
