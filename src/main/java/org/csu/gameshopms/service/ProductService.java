@@ -30,6 +30,7 @@ public class ProductService {
 
     @Autowired
     private ProductMapper productMapper;
+    @Autowired
     private CommentMapper commentMapper;
     @Value("${image.upload-dir}")
     private String uploadDir; // 从配置文件中注入路径
@@ -217,7 +218,7 @@ public class ProductService {
         comment.setLike(0);
 
         // 保存评论
-        commentMapper.insert(comment);
+        commentMapper.insertComment(comment);
     }
 }
 
