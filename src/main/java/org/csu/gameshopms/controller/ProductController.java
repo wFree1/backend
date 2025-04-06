@@ -28,28 +28,6 @@ public class ProductController {
     {
         return productService.getProductDetail(id);
     }
-   /* // 新增图片获取接口
-    @GetMapping("/image/{filename:.+}")
-    public ResponseEntity<Resource> getImage(@PathVariable String filename) {
-        try {aaaaaaaaa
-            // 1. 从存储路径加载文件
-            Path filePath = Paths.get("src/main/resources/static/images/").resolve(filename).normalize();
-            Resource resource = new UrlResource(filePath.toUri());
-
-            // 2. 校验文件是否存在且可读
-            if (resource.exists() && resource.isReadable()) {
-                return ResponseEntity.ok()
-                        .contentType(MediaType.IMAGE_JPEG) // 根据实际类型调整
-                        .body(resource);
-            } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(null);
-            }
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError()
-                    .body(null);
-        }
-    }*/
 // 新增评论接口
    @PostMapping(value = "/{productId}/comments",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
    public ResponseEntity<?> addComment(

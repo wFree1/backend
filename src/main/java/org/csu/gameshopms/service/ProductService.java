@@ -164,6 +164,7 @@ public class ProductService {
             throw new RuntimeException("图片上传失败: " + e.getMessage());
         }
     }
+
     @Transactional
     public void updateProduct(Product updatedProduct, MultipartFile[] imageFiles) {
         // 1. 检查商品是否存在
@@ -254,6 +255,7 @@ public class ProductService {
     }
 
     // 单个删除
+
     @Transactional
     public void deleteProduct(Integer id) {
         // 1. 获取商品信息（包含图片路径）
@@ -263,31 +265,44 @@ public class ProductService {
         }
         // 删除该商品的所有评论
         commentMapper.deleteByProductId(id);
+
+        // 新增：删除所有子种类记录
+        QueryWrapper<Edition> editionWrapper = new QueryWrapper<>();
+        editionWrapper.eq("product_id", id);
+        editionMapper.delete(editionWrapper);
+
         // 2. 删除所有图片（picture1~picture5）
         deleteOldPictures(product);
 
         // 3. 删除数据库记录
         productMapper.deleteById(id);
     }
+
     // 批量删除
+
     @Transactional
     public void batchDeleteProducts(List<Integer> ids) {
         // 1. 批量查询商品信息
         List<Product> products = productMapper.selectBatchIds(ids);
         if (products.isEmpty()) return;
-        // 新增：批量删除这些商品的所有评论
 
-            // 使用 QueryWrapper 构建删除条件
-            QueryWrapper<Comment> wrapper = new QueryWrapper<>();
-            wrapper.in("product_id", ids);
+        // 批量删除这些商品的所有评论
+        QueryWrapper<Comment> commentWrapper = new QueryWrapper<>();
+        commentWrapper.in("product_id", ids);
+        commentMapper.delete(commentWrapper);
 
-            commentMapper.delete(wrapper);
+        // 新增：批量删除所有子种类记录
+        QueryWrapper<Edition> editionWrapper = new QueryWrapper<>();
+        editionWrapper.in("product_id", ids);
+        editionMapper.delete(editionWrapper);
+
         // 2. 删除所有关联图片
-        products.forEach(this::deleteOldPictures); // 遍历每个商品删除图片
+        products.forEach(this::deleteOldPictures);
 
         // 3. 批量删除数据库记录
         productMapper.deleteBatchIds(ids);
     }
+
     // 新增评论方法
     @Transactional
     public void addComment(Integer productId,String content, Integer userId) {
