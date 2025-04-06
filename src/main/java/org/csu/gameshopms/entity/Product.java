@@ -1,9 +1,6 @@
 package org.csu.gameshopms.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 
 import java.util.List;
@@ -16,10 +13,19 @@ public class Product {
     private String name;
     private String category;
     private String type;
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private String picture1;
+
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private String picture2;
+
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private String picture3;
+
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private String picture4;
+
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private String picture5;
     private String description;
     private double price;
