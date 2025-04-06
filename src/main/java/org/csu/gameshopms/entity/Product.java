@@ -1,9 +1,6 @@
 package org.csu.gameshopms.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 
 import java.util.List;
@@ -16,11 +13,21 @@ public class Product {
     private String name;
     private String category;
     private String type;
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private String picture1;
+
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private String picture2;
+
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private String picture3;
+
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private String picture4;
+
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private String picture5;
+
     private String description;
     private double price;
     private int storage;
@@ -58,40 +65,42 @@ public class Product {
         return picture1;
     }
 
-    public void setPicture1(String picture1) {
-        this.picture1 = picture1;
-    }
 
     public String getPicture3() {
         return picture3;
     }
 
-    public void setPicture3(String picture3) {
-        this.picture3 = picture3;
-    }
 
     public String getPicture2() {
         return picture2;
-    }
-
-    public void setPicture2(String picture2) {
-        this.picture2 = picture2;
     }
 
     public String getPicture5() {
         return picture5;
     }
 
-    public void setPicture5(String picture5) {
-        this.picture5 = picture5;
-    }
-
     public String getPicture4() {
         return picture4;
     }
 
+    public void setPicture1(String picture1) {
+        this.picture1 = picture1;
+    }
+
+    public void setPicture2(String picture2) {
+        this.picture2 = picture2;
+    }
+
+    public void setPicture3(String picture3) {
+        this.picture3 = picture3;
+    }
+
     public void setPicture4(String picture4) {
         this.picture4 = picture4;
+    }
+
+    public void setPicture5(String picture5) {
+        this.picture5 = picture5;
     }
 
     public void setComments(List<Comment> comments) {this.comments = comments;}
@@ -120,6 +129,5 @@ public class Product {
     public List<Comment> getComments() { return comments;}
     public List<Edition> getEditions() {
         return editions;
-
     }
 }

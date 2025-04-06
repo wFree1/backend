@@ -1,5 +1,7 @@
 package org.csu.gameshopms.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.micrometer.common.util.StringUtils;
 import org.csu.gameshopms.entity.Comment;
@@ -22,6 +24,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -166,73 +169,80 @@ public class ProductService {
     }
 
     @Transactional
-    public void updateProduct(Product updatedProduct, MultipartFile[] imageFiles) {
+    public void updateProduct(Product updatedProduct, MultipartFile[] imageFiles, String imageOrder) {
         // 1. 检查商品是否存在
         Product existingProduct = productMapper.selectById(updatedProduct.getId());
-
-        // 2. 基础校验（复用添加时的校验方法）
+        if (existingProduct == null) {
+            throw new IllegalArgumentException("商品不存在");
+        }
+        // 2. 基础校验
         validateProduct(updatedProduct);
 
-        // 3. 处理图片更新
-        if (imageFiles != null && imageFiles.length > 0) {
-            if (imageFiles.length > 5) {
-                throw new IllegalArgumentException("最多上传 5 张图片");
-            }
-
-            // 3.1 删除旧图片（可选：根据需求决定是否删除）
-            deleteOldPictures(existingProduct);
-
-            // 3.2 上传新图片并设置路径
-            for (int i = 0; i < imageFiles.length; i++) {
-                if (i >= 5) break; // 最多处理前 5 张
-                MultipartFile file = imageFiles[i];
-                if (!file.isEmpty()) {
-                    String newPath = uploadImage(file);
-                    switch (i) {
-                        case 0: updatedProduct.setPicture1(newPath); break;
-                        case 1: updatedProduct.setPicture2(newPath); break;
-                        case 2: updatedProduct.setPicture3(newPath); break;
-                        case 3: updatedProduct.setPicture4(newPath); break;
-                        case 4: updatedProduct.setPicture5(newPath); break;
-                    }
-                }
-            }
-
-            // 3.3 保留未覆盖的旧图片（例如：用户只上传了前 2 张，保留后 3 张旧图）
-            if (imageFiles.length < 5) {
-                for (int i = imageFiles.length; i < 5; i++) {
-                    switch (i) {
-                        case 0: updatedProduct.setPicture1(existingProduct.getPicture1()); break;
-                        case 1: updatedProduct.setPicture2(existingProduct.getPicture2()); break;
-                        case 2: updatedProduct.setPicture3(existingProduct.getPicture3()); break;
-                        case 3: updatedProduct.setPicture4(existingProduct.getPicture4()); break;
-                        case 4: updatedProduct.setPicture5(existingProduct.getPicture5()); break;
-                    }
-                }
-            }
-        } else {
-            // 未上传新图片时，保留所有旧图片
-            updatedProduct.setPicture1(existingProduct.getPicture1());
-            updatedProduct.setPicture2(existingProduct.getPicture2());
-            updatedProduct.setPicture3(existingProduct.getPicture3());
-            updatedProduct.setPicture4(existingProduct.getPicture4());
-            updatedProduct.setPicture5(existingProduct.getPicture5());
+        // 3. 解析 imageOrder（前端传来的 JSON 字符串，数组长度固定为5，
+        // 每个元素为该槽预览 URL；如果为空字符串，则表示该槽已删除）
+        List<String> newOrder;
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            newOrder = mapper.readValue(imageOrder, new TypeReference<List<String>>() {});
+        } catch (Exception e) {
+            throw new RuntimeException("解析 imageOrder 失败: " + e.getMessage());
         }
-        // 4. 更新数据库
-        productMapper.updateById(updatedProduct);
-        // 5. 处理版本更新（先删除旧版本，再插入新版本）
-        if (updatedProduct.getEditions() != null) {
-            // 删除所有旧版本
-            editionMapper.delete(new QueryWrapper<Edition>().eq("product_id", updatedProduct.getId()));
+        if (newOrder.size() != 5) {
+            throw new IllegalArgumentException("imageOrder 长度必须为 5");
+        }
 
-            // 插入新版本
+        // 3. 对于每个图片槽 i=0..4，更新图片字段
+        for (int i = 0; i < 5; i++) {
+            MultipartFile file = imageFiles[i];
+            String orderEntry = newOrder.get(i);
+            if (file != null && !file.isEmpty()) {
+                // 上传新图片，更新对应槽
+                String newPath = uploadImage(file);
+                setPictureField(updatedProduct, i, newPath);
+            } else {
+                if (orderEntry.isEmpty()) {
+                    // 前端表示该槽已删除，则置为 null
+                    setPictureField(updatedProduct, i, null);
+                } else {
+                    // 未上传新文件且槽未删除，则根据 newOrder 中的 URL 提取文件名更新
+                    String fileName = extractFileName(orderEntry);
+                    setPictureField(updatedProduct, i, fileName);
+                }
+            }
+        }
+
+        // 4. 更新数据库记录
+        productMapper.updateById(updatedProduct);
+        // 5. 更新版本信息（先删除旧版本，再插入新版本）
+        if (updatedProduct.getEditions() != null) {
+            editionMapper.delete(new QueryWrapper<Edition>().eq("product_id", updatedProduct.getId()));
             if (!updatedProduct.getEditions().isEmpty()) {
                 updatedProduct.getEditions().forEach(edition -> edition.setProductId(updatedProduct.getId()));
-                editionMapper.insertBatch(updatedProduct.getEditions()); // 批量插入
+                editionMapper.insertBatch(updatedProduct.getEditions());
             }
         }
     }
 
+    // 辅助方法：根据槽位设置图片字段
+    private void setPictureField(Product product, int index, String path) {
+        switch (index) {
+            case 0: product.setPicture1(path); break;
+            case 1: product.setPicture2(path); break;
+            case 2: product.setPicture3(path); break;
+            case 3: product.setPicture4(path); break;
+            case 4: product.setPicture5(path); break;
+        }
+    }
+
+    // 辅助方法：从 URL 中提取图片文件名
+    private String extractFileName(String url) {
+        if (url == null || url.isEmpty()) return "";
+        int lastSlash = url.lastIndexOf('/');
+        if (lastSlash != -1 && lastSlash < url.length() - 1) {
+            return url.substring(lastSlash + 1);
+        }
+        return url;
+    }
     // 删除旧图片（根据需求实现）
     private void deleteOldPictures(Product existingProduct) {
         deleteFile(existingProduct.getPicture1());
